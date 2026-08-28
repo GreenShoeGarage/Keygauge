@@ -1,0 +1,11 @@
+{
+  "name": "KEYGAUGE — Key Bitting Estimator",
+  "short_name": "KEYGAUGE",
+  "description": "Local-first screen and photo key bitting estimation instrument for authorized locksmithing work.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#11120f",
+  "theme_color": "#171815",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

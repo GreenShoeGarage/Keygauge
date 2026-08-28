@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>KEYGAUGE Calibration Marker</title>
+  <style>
+    *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:18mm;color:#111}.controls{display:flex;gap:10px;align-items:center;margin-bottom:12mm;padding:12px;background:#eee}.controls button{padding:10px 16px}.marker{position:relative;width:100mm;height:60mm;border:2mm solid #000;background:#fff;overflow:hidden}.corner{position:absolute;width:15mm;height:15mm;border:3mm solid #000}.tl{left:3mm;top:3mm;border-right:0;border-bottom:0}.tr{right:3mm;top:3mm;border-left:0;border-bottom:0}.bl{left:3mm;bottom:3mm;border-right:0;border-top:0}.br{right:3mm;bottom:3mm;border-left:0;border-top:0}.orientation{position:absolute;left:44mm;top:4mm;width:0;height:0;border-left:6mm solid transparent;border-right:6mm solid transparent;border-bottom:10mm solid #000}.label{position:absolute;inset:19mm 0 auto;text-align:center;font-weight:900;letter-spacing:.16em}.sub{position:absolute;inset:27mm 0 auto;text-align:center;font:3.2mm monospace}.ruler{position:absolute;left:10mm;right:10mm;bottom:8mm;height:10mm;border-bottom:.6mm solid #000;display:flex;justify-content:space-between;align-items:end}.ruler i{width:.4mm;height:4mm;background:#000}.ruler i:nth-child(6){height:7mm}.verify{width:100mm;margin-top:8mm;border:1px solid #000;padding:4mm}.verify strong{display:block;margin-bottom:2mm}.line{display:inline-block;width:50mm;border-top:.5mm solid #000;vertical-align:middle;margin:0 2mm}.warning{font-weight:bold;margin-top:8mm}.meta{font:3mm monospace;margin-top:3mm}@media print{body{margin:15mm}.controls{display:none}@page{size:auto;margin:15mm}}
+  </style>
+</head>
+<body>
+  <div class="controls"><button onclick="window.print()">Print marker</button><strong>Set print scale to 100%. Disable “Fit to page.”</strong></div>
+  <div class="marker" aria-label="100 by 60 millimeter KEYGAUGE calibration marker">
+    <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+    <span class="orientation"></span><div class="label">KEYGAUGE</div><div class="sub">100.00 × 60.00 mm · TOP ▲</div>
+    <div class="ruler"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+  <div class="verify"><strong>Printed-dimension verification</strong>Measure the outer border: <span class="line"></span> mm × <span class="line"></span> mm<br><br>The marker is valid only when the measured result is 100.00 × 60.00 millimeters. Each interval on the lower ruler is 10 millimeters.</div>
+  <p class="warning">PRINT AT 100 PERCENT. The marker and key must be in the same flat plane.</p>
+  <p class="meta">KEYGAUGE v1.2.4 · high-contrast corner targets · orientation and 10 mm verification marks</p>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#171815">
+  <meta name="description" content="KEYGAUGE is a local-first screen and photo key bitting estimation instrument for authorized locksmithing work.">
+  <title>KEYGAUGE — Key Bitting Estimator</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to workspace</a>
+  <header class="instrument-header">
+    <button class="mobile-menu icon-button" id="mobile-menu" aria-label="Open navigation">☰</button>
+    <div class="brand-block">
+      <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div><strong>KEYGAUGE</strong><small>KEY BITTING ESTIMATOR · v1.2.4</small></div>
+    </div>
+    <div class="status-cluster">
+      <span class="status-lamp safe"><i></i> LOCAL ONLY</span>
+      <span class="status-lamp" id="autosave-state"><i></i> SAVED</span>
+      <button class="icon-button" id="fullscreen-btn" title="Full-screen measurement" aria-label="Enter full screen">⛶</button>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <nav class="side-rail" id="side-rail" aria-label="KEYGAUGE sections">
+      <button class="nav-item active" data-view="home"><span>⌂</span><b>Start</b></button>
+      <button class="nav-item" data-view="screen"><span>▱</span><b>Measure on Screen</b></button>
+      <button class="nav-item" data-view="photo"><span>◉</span><b>Analyze a Photo</b></button>
+      <button class="nav-item" data-view="calibration"><span>↔</span><b>Screen Calibration</b></button>
+      <button class="nav-item" data-view="records"><span>▤</span><b>Records & Compare</b></button>
+      <button class="nav-item" data-view="profiles"><span>⌘</span><b>Key Profiles</b></button>
+      <button class="nav-item" data-view="help"><span>?</span><b>Guide & Privacy</b></button>
+      <div class="rail-footer">
+        <div class="field inline"><label for="mode-select">Controls</label><select id="mode-select"><option value="easy">Easy</option><option value="advanced">Advanced</option></select></div>
+        <div class="field inline"><label for="theme-select">Theme</label><select id="theme-select"><option value="dark">Dark</option><option value="light">Light</option><option value="contrast">High contrast</option></select></div>
+        <button class="subtle-button" id="restore-session">Restore last session</button>
+      </div>
+    </nav>
+
+    <main id="workspace" class="workspace" tabindex="-1">
+      <section class="view active" id="view-home" aria-labelledby="home-title">
+        <div class="eyebrow"><span>AUTHORIZED MEASUREMENT INSTRUMENT</span><span id="calibration-chip" class="chip warn">SCREEN NOT CALIBRATED</span></div>
+        <h1 id="home-title">Choose a measurement path.</h1>
+        <p class="lede">Both paths create the same editable bitting record. No photograph, measurement, or profile leaves this device.</p>
+        <div class="entry-grid">
+          <button class="entry-card brass" data-go="screen">
+            <span class="entry-index">01 / PHYSICAL ALIGNMENT</span>
+            <span class="entry-icon">▱<i></i></span>
+            <strong>Measure on Screen</strong>
+            <span>Place the physical key against a calibrated screen and adjust the cut guides.</span>
+            <em>CALIBRATE → ALIGN → MEASURE <b>→</b></em>
+          </button>
+          <button class="entry-card green" data-go="photo">
+            <span class="entry-index">02 / LOCAL IMAGE ANALYSIS</span>
+            <span class="entry-icon">◉<i></i></span>
+            <strong>Analyze a Photo</strong>
+            <span>Photograph or import an image, establish scale, and estimate bitting from the visible contour.</span>
+            <em>CAPTURE → SCALE → DETECT <b>→</b></em>
+          </button>
+        </div>
+        <div class="home-readout">
+          <div><small>CURRENT PROFILE</small><strong id="home-profile">Demonstration 5-pin Shoulder</strong></div>
+          <div><small>ACTIVE RESULT</small><strong id="home-result">— — — — —</strong></div>
+          <div><small>METHOD</small><strong id="home-method">Not measured</strong></div>
+          <button class="secondary-button" id="new-measurement">＋ New measurement</button>
+        </div>
+        <div class="notice compact"><span>!</span><p><strong>Responsible use.</strong> Use KEYGAUGE only for keys you own or are authorized to service. Verify every estimate with professional locksmith tools before cutting a key or servicing a lock.</p></div>
+      </section>
+
+      <section class="view" id="view-calibration" aria-labelledby="cal-title">
+        <div class="section-heading"><div><span class="kicker">SCREEN CALIBRATION</span><h2 id="cal-title">Establish physical scale</h2></div><span class="status-lamp" id="cal-status"><i></i> NOT CALIBRATED</span></div>
+        <div class="two-column calibration-layout">
+          <div class="panel controls-panel">
+            <h3>1. Choose a reference</h3>
+            <div class="segmented" role="group" aria-label="Calibration reference">
+              <button class="active" data-calref="card">ID card</button><button data-calref="quarter">US quarter</button><button data-calref="custom">Custom</button>
+            </div>
+            <div class="field-row custom-cal hidden" id="custom-cal-fields">
+              <label>Width <span><input id="custom-cal-width" type="number" value="50" min="5" step="0.01"> mm</span></label>
+              <label>Height <span><input id="custom-cal-height" type="number" value="30" min="5" step="0.01"> mm</span></label>
+            </div>
+            <h3>2. Match the object</h3>
+            <p>Place the object against the screen, then adjust width and height until the outline matches exactly.</p>
+            <label class="range-field"><span>Horizontal size <output id="cal-width-output">324 px</output></span><input id="cal-width" type="range" min="100" max="900" value="324"></label>
+            <label class="range-field"><span>Vertical size <output id="cal-height-output">204 px</output></span><input id="cal-height" type="range" min="80" max="600" value="204"></label>
+            <div class="button-row"><button class="primary-button" id="save-calibration">Save calibration</button><button class="secondary-button" id="reset-calibration">Recalibrate</button></div>
+            <div class="metric-grid">
+              <div><small>HORIZONTAL SCALE</small><strong id="cal-x-factor">—</strong><span>mm / CSS px</span></div>
+              <div><small>VERTICAL SCALE</small><strong id="cal-y-factor">—</strong><span>mm / CSS px</span></div>
+              <div><small>CONFIDENCE</small><strong id="cal-confidence">Not set</strong></div>
+              <div><small>DEVICE PIXEL RATIO</small><strong id="cal-dpr">—</strong></div>
+            </div>
+          </div>
+          <div class="panel calibration-stage">
+            <div class="engraved-label">PHYSICAL REFERENCE OUTLINE · PLACE OBJECT HERE</div>
+            <div class="reference-outline card-shape" id="reference-outline"><span>85.60 × 53.98 mm</span></div>
+            <div class="verification-ruler" id="verification-ruler"><span>0</span><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><span>10 mm</span></div>
+            <p class="stage-help">Use full screen and browser zoom at 100%. Calibration remains an estimate affected by the reference object and visual matching.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="view measurement-view" id="view-screen" aria-labelledby="screen-title">
+        <div class="section-heading"><div><span class="kicker">MEASURE ON SCREEN</span><h2 id="screen-title">Align the physical key</h2></div><div class="header-actions"><button class="secondary-button" data-go="calibration">Calibrate screen</button><button class="primary-button" id="save-screen-record">Save record</button></div></div>
+        <div class="instructions-strip">
+          <strong>To measure your key</strong><ol><li>Place the key on top of the screen.</li><li>Use the contour to align your key.</li><li>Adjust each cut’s depth until the guides match. It is easier if you look with one eye closed.</li></ol>
+        </div>
+        <div class="notice scratch"><span>!</span><p><strong>Protect the display.</strong> Use only light contact. Consider a thin transparent screen protector.</p></div>
+        <div class="setup-bar">
+          <label>Key-system profile<select class="profile-select"></select></label>
+          <label>Orientation<select id="screen-orientation"><option value="ltr">Left to right</option><option value="rtl">Right to left</option></select></label>
+          <label>Alignment<select id="screen-alignment"><option value="shoulder">Shoulder stop</option><option value="tip">Tip stop</option></select></label>
+          <button class="toggle-button" id="lock-alignment" aria-pressed="false">◇ Alignment unlocked</button>
+          <button class="secondary-button" id="reset-screen">Reset</button>
+        </div>
+        <div class="calibration-warning" id="screen-cal-warning">Screen geometry is uncalibrated. Results will be labeled uncalibrated. <button data-go="calibration">Calibrate now</button></div>
+        <div class="measurement-grid">
+          <div class="measurement-column">
+            <div class="panel blade-stage" id="blade-stage">
+              <div class="stage-toolbar"><span>TRUE-SCALE CONTOUR</span><label><input id="screen-high-contrast" type="checkbox"> High contrast</label><button id="screen-pan-left" aria-label="Pan left">←</button><button id="screen-pan-right" aria-label="Pan right">→</button></div>
+              <svg id="blade-svg" role="img" aria-label="Calibrated key blade measurement contour"></svg>
+              <div class="magnifier" id="screen-magnifier"><small>MAGNIFIED CUT</small><canvas width="240" height="120"></canvas></div>
+            </div>
+            <div class="advanced-only panel compact-controls">
+              <label>Rotation <span><input id="screen-rotation" type="range" min="-8" max="8" step="0.1" value="0"><output>0.0°</output></span></label>
+              <label>Horizontal offset <span><input id="screen-offset-x" type="range" min="-40" max="40" value="0"><output>0 px</output></span></label>
+              <label>Vertical offset <span><input id="screen-offset-y" type="range" min="-40" max="40" value="0"><output>0 px</output></span></label>
+              <label>Line thickness <span><input id="overlay-thickness" type="range" min="1" max="8" value="3"><output>3 px</output></span></label>
+              <label>Overlay opacity <span><input id="overlay-opacity" type="range" min="20" max="100" value="90"><output>90%</output></span></label>
+              <label>Overlay color <input id="overlay-color" type="color" value="#d9a84e"></label>
+            </div>
+            <div class="panel cut-controls"><div class="cut-controls-head"><h3>Cut-depth controls</h3><div><label class="check"><input id="snap-depths" type="checkbox" checked> Snap to valid depths</label><button class="subtle-button" id="all-cuts-down">All −</button><button class="subtle-button" id="all-cuts-up">All ＋</button><button class="subtle-button" id="reverse-bitting">Reverse order</button><button class="subtle-button" id="reset-cuts">Reset cuts</button></div></div><div id="cut-slider-list" class="cut-slider-list"></div></div>
+          </div>
+          <aside class="results-panel panel" id="screen-results"></aside>
+        </div>
+      </section>
+
+      <section class="view measurement-view" id="view-photo" aria-labelledby="photo-title">
+        <div class="section-heading"><div><span class="kicker">ANALYZE A PHOTO</span><h2 id="photo-title">Estimate from a visible contour</h2></div><span class="status-lamp safe"><i></i> LOCAL IMAGE PROCESSING</span></div>
+        <div class="photo-workflow" aria-label="Photo analysis workflow"><span class="active">Capture</span><span>Scale</span><span>Correct</span><span>Align</span><span>Detect</span><span>Verify</span><span>Export</span></div>
+        <div class="photo-instructions panel" id="photo-instructions">
+          <div><h3>To photograph your key</h3><ol><li>Place the key on a flat, contrasting surface.</li><li>Place a ruler, reference card, or calibration marker beside it.</li><li>Keep the key and reference object in the same flat plane.</li><li>Position the camera directly above the key.</li><li>Make sure the complete blade, shoulder, and tip are visible.</li><li>Avoid shadows, glare, blur, and angled photographs.</li></ol></div>
+          <div class="photo-actions"><button class="primary-button" id="take-photo">◉ Take Photo</button><button class="secondary-button" id="choose-photo">Choose Image</button><button class="secondary-button" id="print-marker">Print calibration marker</button><small>JPEG, PNG, or WebP · paste or drag and drop also supported</small></div>
+          <input id="camera-input" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden>
+          <input id="photo-input" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+        </div>
+        <blockquote>Photo measurements are estimates. Perspective, shadows, wear, image resolution, and an inaccurate scale reference can affect the result. Verify the bitting with professional locksmith tools before cutting or servicing a lock.</blockquote>
+        <div class="photo-workspace hidden" id="photo-workspace">
+          <div class="photo-main">
+            <div class="photo-toolbar panel">
+              <button id="replace-photo">Replace</button><button id="rotate-left">↶ Rotate</button><button id="mirror-photo">⇋ Mirror</button><button id="crop-photo">Set blade crop</button><button id="apply-crop">Apply crop</button><button id="reset-crop">Reset crop</button><button id="full-photo">Full resolution</button><button id="restore-photo">Restore original</button>
+              <label>Exposure <input id="photo-exposure" type="range" min="-80" max="80" value="0"></label>
+              <label>Contrast <input id="photo-contrast" type="range" min="40" max="220" value="110"></label>
+              <label>Edge visibility <input id="photo-edge" type="range" min="0" max="100" value="30"></label>
+            </div>
+            <div class="photo-canvas-wrap panel" id="photo-dropzone" tabindex="0" aria-label="Photo analysis canvas. Drop or paste an image here.">
+              <canvas id="photo-canvas"></canvas>
+              <div class="drop-message">Drop a key image here</div>
+              <div class="inspection-loupe" id="inspection-loupe"><canvas width="220" height="160"></canvas><span>8× inspection</span></div>
+            </div>
+            <div class="geometry-strip panel" aria-live="polite"><div><small>COORDINATE SPACE</small><strong id="geometry-space">SOURCE</strong></div><div><small>ANALYSIS SIZE</small><strong id="geometry-size">—</strong></div><div><small>POINTER — ANALYSIS</small><strong id="analysis-coordinate">—</strong></div><div><small>POINTER — SOURCE</small><strong id="source-coordinate">—</strong></div><div><small>PHYSICAL</small><strong id="physical-coordinate">UNCALIBRATED</strong></div></div>
+            <div class="layer-toggles panel"><label><input type="checkbox" id="layer-photo" checked> Photograph</label><label><input type="checkbox" id="layer-mask"> Blade mask</label><label><input type="checkbox" id="layer-top-edge" checked> Top edge</label><label><input type="checkbox" id="layer-bottom-edge" checked> Bottom edge</label><label><input type="checkbox" id="layer-edge" checked> Cut points</label><label><input type="checkbox" id="layer-reconstruction" checked> Reconstructed contour</label><label>Color <input id="photo-overlay-color" type="color" value="#75f0b1"></label><label>Thickness <input id="photo-overlay-width" type="range" min="1" max="8" value="3"></label><label>Opacity <input id="photo-overlay-opacity" type="range" min="10" max="100" value="90"></label></div>
+          </div>
+          <aside class="photo-side">
+            <div class="panel photo-step" data-photo-step="scale">
+              <span class="step-number">01</span><h3>Scale reference</h3>
+              <label>Reference<select id="photo-scale-method"><option value="card">ID card width — 85.60 mm</option><option value="quarter">US quarter — 24.26 mm</option><option value="ruler">Visible metric ruler</option><option value="marker">KEYGAUGE marker — 100 mm</option><option value="custom">Custom dimension</option><option value="profile">Known profile dimension (lower confidence)</option></select></label>
+              <label>Known distance <span><input id="photo-known-distance" type="number" value="85.60" min="1" step="0.01"> mm</span></label>
+              <p>Drag the two round scale points over the known distance.</p>
+              <div class="readout"><small>IMAGE SCALE</small><strong id="photo-ppm">Uncalibrated</strong><span id="photo-scale-quality">Set both points</span></div>
+              <button class="secondary-button wide" id="set-scale">Accept image scale</button>
+            </div>
+            <div class="panel photo-step" data-photo-step="correct">
+              <span class="step-number">02</span><h3>Perspective & rotation</h3>
+              <p>Place the four square handles around the reference object.</p>
+              <div class="button-row"><button class="secondary-button" id="detect-marker">Detect marker</button><button class="secondary-button" id="apply-correction">Accept correction</button><button class="subtle-button" id="reject-correction">Reject</button></div>
+              <label>Horizontal scale <input id="perspective-x" type="range" min="70" max="130" value="100"></label>
+              <label>Vertical scale <input id="perspective-y" type="range" min="70" max="130" value="100"></label>
+              <label>Keystone <input id="perspective-skew" type="range" min="-20" max="20" value="0"></label>
+              <div class="correction-progress hidden" id="correction-progress"><label for="correction-meter">RECTIFYING LOCALLY</label><progress id="correction-meter" max="100" value="0"></progress><output id="correction-output">0%</output></div>
+              <div class="perspective-previews"><figure><canvas id="source-preview" width="180" height="110"></canvas><figcaption>Original geometry</figcaption></figure><figure><canvas id="corrected-preview" width="180" height="110"></canvas><figcaption>Corrected geometry</figcaption></figure></div>
+              <div class="readout marker-readout" id="marker-readout"><small>MARKER DETECTION</small><strong>Not run</strong><span>Use Detect marker for a local corner-target search.</span></div>
+              <div class="marker-corners" id="marker-corners" aria-label="Marker corner confidence"></div>
+              <div class="readout geometry-quality"><small>CORRECTION RESIDUAL</small><strong id="correction-residual">Not applied</strong><span id="correction-detail">Four-corner projective transform</span></div>
+              <div class="readout preflight-readout"><small>IMAGE QUALITY PREFLIGHT</small><strong id="preflight-verdict">Not checked</strong><span id="preflight-detail">Load an image or run the preflight.</span></div>
+              <button class="subtle-button wide" id="run-preflight">Re-run image preflight</button>
+              <div class="quality-list" id="photo-quality-list"></div>
+            </div>
+            <div class="panel photo-step" data-photo-step="align">
+              <span class="step-number">03</span><h3>Align & detect</h3>
+              <label>Key profile<select class="profile-select"></select></label>
+              <label>Reference<select id="photo-alignment"><option value="shoulder">Shoulder</option><option value="tip">Tip</option></select></label>
+              <label>Segmentation polarity<select id="segmentation-polarity"><option value="auto">Auto — light or dark key</option><option value="dark">Dark key on light surface</option><option value="light">Light key on dark surface</option></select></label>
+              <label>Sensitivity <input id="segmentation-sensitivity" type="range" min="-60" max="60" value="0"></label>
+              <label>Mask cleanup <input id="segmentation-cleanup" type="range" min="0" max="3" value="1"></label>
+              <button class="secondary-button wide" id="segment-blade">Segment blade</button>
+              <div class="readout" id="segmentation-readout"><small>BLADE SEGMENTATION</small><strong>Not run</strong><span>Choose polarity or Auto, then segment the blade.</span></div>
+              <label>Bitted edge<select id="photo-edge-side"><option value="top">Top edge</option><option value="bottom">Opposite / bottom edge</option><option value="both">Both edges — double-sided</option></select></label>
+              <div class="button-row"><button class="primary-button" id="detect-contour">Detect selected edge</button><button class="secondary-button" id="detect-both">Analyze both</button></div>
+              <button class="subtle-button wide" id="reverse-photo">Reverse bitting order</button>
+              <p>Drag the diamond reference, baseline ends, or any cut point to correct the estimate. Alignment changes are recalculated without discarding prior cut values.</p>
+              <div class="button-row"><button class="subtle-button" id="photo-undo">↶ Undo</button><button class="subtle-button" id="photo-redo">↷ Redo</button></div>
+            </div>
+          </aside>
+        </div>
+        <div class="photo-results hidden" id="photo-results-wrap">
+          <div class="panel" id="photo-results"></div>
+          <div class="panel"><div class="cut-controls-head"><h3>Verify every cut</h3><span>Automatic detection is an editable starting point.</span></div><div id="photo-cut-table" class="table-wrap"></div><div class="button-row"><button class="primary-button" id="save-photo-record">Save photo-derived record</button><button class="secondary-button" id="compare-methods">Compare with on-screen result</button><label class="check"><input type="checkbox" id="delete-photo-after" checked> Delete Photo After Measurement</label><button class="danger-button" id="delete-photo">Permanently delete photo</button></div></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-records" aria-labelledby="records-title">
+        <div class="section-heading"><div><span class="kicker">LOCAL RECORDS</span><h2 id="records-title">Review and compare measurements</h2></div><div class="header-actions"><button class="secondary-button" id="export-project">Export project JSON</button><button class="secondary-button" id="import-project">Import project</button><input type="file" id="import-project-file" accept="application/json" hidden></div></div>
+        <div class="panel record-editor"><label>Record name<input id="record-name" value="Untitled key measurement"></label><label>Measurement method<select id="record-method"><option value="screen">On-screen physical alignment</option><option value="photo">Photo analysis</option><option value="combined">Combination of both methods</option><option value="manual">Manual entry</option></select></label><label>Manual bitting<input id="manual-bitting" placeholder="Example: 3-2-4-1-5"></label><label>Asset or job reference<input id="record-reference" placeholder="Optional anonymized reference"></label><label class="notes-field">Notes<textarea id="record-notes" rows="2" placeholder="Measurement notes; avoid addresses or access-control details."></textarea></label><button class="primary-button" id="manual-save">Save current record</button></div>
+        <div class="panel"><div class="table-actions"><label>Compare A<select id="compare-a"></select></label><label>Compare B<select id="compare-b"></select></label><button class="secondary-button" id="run-compare">Compare</button><button class="secondary-button" id="export-csv">Export CSV</button><button class="secondary-button" id="print-report">Print / PDF report</button><button class="secondary-button" id="copy-bitting">Copy bitting</button></div><div id="comparison-output"></div></div>
+        <div class="panel"><div class="cut-controls-head"><h3>Saved records</h3><button class="subtle-button" id="clear-sample">Clear sample data</button></div><div id="records-list" class="records-list"></div></div>
+      </section>
+
+      <section class="view" id="view-profiles" aria-labelledby="profiles-title">
+        <div class="section-heading"><div><span class="kicker">KEY-SYSTEM PROFILES</span><h2 id="profiles-title">Profile dimensions and rules</h2></div><div class="header-actions"><button class="secondary-button" id="export-profiles">Export profiles</button><button class="secondary-button" id="import-profiles">Import profiles</button><input type="file" id="import-profiles-file" accept="application/json" hidden><button class="primary-button" id="duplicate-profile">Duplicate selected</button></div></div>
+        <div class="notice"><span>i</span><p>Bundled profiles are explicitly <strong>demonstration data</strong> and are not manufacturer specifications. Enter verified dimensions from an authorized source before professional use.</p></div>
+        <div class="profile-layout"><div class="panel" id="profile-list"></div><form class="panel profile-form" id="profile-form"><div class="form-grid"><label>Profile name<input name="name" required></label><label>Manufacturer<input name="manufacturer"></label><label>Compatible blanks<input name="blanks"></label><label>Cut positions<input name="cutCount" type="number" min="1" max="14"></label><label>First-cut distance (mm)<input name="firstCut" type="number" step="0.01"></label><label>Spacing (mm)<input name="spacing" type="number" step="0.01"></label><label>Stop method<select name="stop"><option value="shoulder">Shoulder</option><option value="tip">Tip</option></select></label><label>Tolerance (mm)<input name="tolerance" type="number" step="0.01"></label><label>Depth map (code:mm, one per line)<textarea name="depthText" rows="6"></textarea></label><label>Revision date<input name="revision" type="date"></label><label class="span-2">Profile source<input name="source" placeholder="Document, gauge, or other authorized source"></label><label class="span-2">Notes<textarea name="notes" rows="3"></textarea></label></div><div class="button-row"><button class="primary-button" type="submit">Save profile</button><button class="secondary-button" type="button" id="new-profile">New custom profile</button></div></form></div>
+      </section>
+
+      <section class="view" id="view-help" aria-labelledby="help-title">
+        <div class="section-heading"><div><span class="kicker">GUIDE, LIMITATIONS & PRIVACY</span><h2 id="help-title">Use KEYGAUGE responsibly</h2></div><div class="header-actions"><a class="secondary-button" href="CHANGELOG.md" download>Batch 2 changelog</a><a class="secondary-button" href="README.md" download>Download README</a></div></div>
+        <div class="help-grid">
+          <article class="panel"><h3>Screen method</h3><p>Calibrate in full screen at 100% browser zoom, select a verified profile, align the shoulder or tip, and adjust each cut. A browser cannot infer true physical size from resolution alone.</p></article>
+          <article class="panel"><h3>Photo method</h3><p>Keep the scale reference in the same plane as the key. Correct perspective, then verify the baseline, reference, and every cut. Unscaled photos remain explicitly uncalibrated.</p></article>
+          <article class="panel"><h3>Private by design</h3><p>Processing, autosave, profiles, and records remain in this browser. There is no telemetry, analytics, advertising, remote image analysis, or account.</p></article>
+          <article class="panel"><h3>Professional verification</h3><p>KEYGAUGE is a visual measurement and documentation aid. Wear, parallax, display calibration, image blur, and unverified profile data can all affect estimates.</p></article>
+        </div>
+        <div class="panel data-controls"><div><h3>Local data controls</h3><p id="photo-storage-status">No photograph is currently stored locally.</p></div><button class="secondary-button" id="download-static">Download static app</button><button class="danger-button" id="fresh-start">Fresh start — clear all local data</button></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="responsible-dialog">
+    <form method="dialog" class="dialog-card">
+      <span class="dialog-mark">KEYGAUGE</span>
+      <h2>Authorized use only</h2>
+      <p>KEYGAUGE is intended for locksmithing, maintenance, restoration, and measurement of keys you own or are authorized to service. You are responsible for complying with applicable laws, professional requirements, and property-access rules.</p>
+      <label class="check"><input type="checkbox" id="ack-check"> I understand and will use KEYGAUGE only for authorized work.</label>
+      <button class="primary-button" id="ack-button" value="accept" disabled>Enter KEYGAUGE</button>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
