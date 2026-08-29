@@ -5,21 +5,26 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#171815">
   <meta name="description" content="KEYGAUGE is a local-first screen and photo key bitting estimation instrument for authorized locksmithing work.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'sha256-08jVyhylsB6gFkxpXFRMogYlvplKGdqiu+n1TvbXjAw='; connect-src 'self'; worker-src 'self' blob:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>KEYGAUGE — Key Bitting Estimator</title>
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
+  <script>window.__KEYGAUGE_BOOTED=false;(()=>{const{pathname}=window.location;const leaf=pathname.slice(pathname.lastIndexOf("/")+1);if(!pathname.endsWith("/")&&!leaf.includes(".")){const directoryUrl=new URL(window.location.href);directoryUrl.pathname+="/";window.location.replace(directoryUrl.href);}})();window.setTimeout(()=>{if(!window.__KEYGAUGE_BOOTED){const boot=document.getElementById("boot-error");if(boot)boot.hidden=false;}},1500);</script>
+  <base href="./">
+  <link rel="manifest" href="./manifest.webmanifest?v=1.9.3">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css?v=1.9.3">
 </head>
 <body>
   <a class="skip-link" href="#workspace">Skip to workspace</a>
   <header class="instrument-header">
-    <button class="mobile-menu icon-button" id="mobile-menu" aria-label="Open navigation">☰</button>
+    <button class="mobile-menu icon-button" id="mobile-menu" aria-label="Open navigation" aria-controls="side-rail" aria-expanded="false">☰</button>
     <div class="brand-block">
       <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
-      <div><strong>KEYGAUGE</strong><small>KEY BITTING ESTIMATOR · v1.2.4</small></div>
+      <div><strong>KEYGAUGE</strong><small>KEY BITTING ESTIMATOR · v1.9.3</small></div>
     </div>
     <div class="status-cluster">
       <span class="status-lamp safe"><i></i> LOCAL ONLY</span>
+      <span class="status-lamp" id="connection-state"><i></i> ONLINE</span>
+      <span class="status-lamp safe" id="storage-state"><i></i> STORAGE OK</span>
       <span class="status-lamp" id="autosave-state"><i></i> SAVED</span>
       <button class="icon-button" id="fullscreen-btn" title="Full-screen measurement" aria-label="Enter full screen">⛶</button>
     </div>
@@ -33,6 +38,7 @@
       <button class="nav-item" data-view="calibration"><span>↔</span><b>Screen Calibration</b></button>
       <button class="nav-item" data-view="records"><span>▤</span><b>Records & Compare</b></button>
       <button class="nav-item" data-view="profiles"><span>⌘</span><b>Key Profiles</b></button>
+      <button class="nav-item" data-view="validation"><span>✓</span><b>Validation & Diagnostics</b></button>
       <button class="nav-item" data-view="help"><span>?</span><b>Guide & Privacy</b></button>
       <div class="rail-footer">
         <div class="field inline"><label for="mode-select">Controls</label><select id="mode-select"><option value="easy">Easy</option><option value="advanced">Advanced</option></select></div>
@@ -42,6 +48,9 @@
     </nav>
 
     <main id="workspace" class="workspace" tabindex="-1">
+      <div class="system-banner storage-banner hidden" id="storage-warning" role="alert"><div><strong>LOCAL SAVE ATTENTION</strong><span id="storage-warning-text"></span></div><button class="secondary-button" id="storage-export-backup">Export project backup</button></div>
+      <div class="system-banner update-banner hidden" id="update-banner" role="status"><div><strong>KEYGAUGE UPDATE READY</strong><span>A complete new offline version is available.</span></div><button class="primary-button" id="apply-update">Update and reload</button><button class="subtle-button" id="dismiss-update">Later</button></div>
+      <div class="sr-only" id="view-announcer" role="status" aria-live="polite"></div>
       <section class="view active" id="view-home" aria-labelledby="home-title">
         <div class="eyebrow"><span>AUTHORIZED MEASUREMENT INSTRUMENT</span><span id="calibration-chip" class="chip warn">SCREEN NOT CALIBRATED</span></div>
         <h1 id="home-title">Choose a measurement path.</h1>
@@ -158,7 +167,7 @@
               <label>Edge visibility <input id="photo-edge" type="range" min="0" max="100" value="30"></label>
             </div>
             <div class="photo-canvas-wrap panel" id="photo-dropzone" tabindex="0" aria-label="Photo analysis canvas. Drop or paste an image here.">
-              <canvas id="photo-canvas"></canvas>
+              <canvas id="photo-canvas" tabindex="0" aria-label="Key photograph with editable measurement overlay. Select a handle with pointer, then use arrow keys for fine adjustment."></canvas>
               <div class="drop-message">Drop a key image here</div>
               <div class="inspection-loupe" id="inspection-loupe"><canvas width="220" height="160"></canvas><span>8× inspection</span></div>
             </div>
@@ -202,6 +211,7 @@
               <label>Bitted edge<select id="photo-edge-side"><option value="top">Top edge</option><option value="bottom">Opposite / bottom edge</option><option value="both">Both edges — double-sided</option></select></label>
               <div class="button-row"><button class="primary-button" id="detect-contour">Detect selected edge</button><button class="secondary-button" id="detect-both">Analyze both</button></div>
               <button class="subtle-button wide" id="reverse-photo">Reverse bitting order</button>
+              <div class="grid-nudges" aria-label="Measurement grid adjustments"><button data-grid-dx="-1" aria-label="Move measurement grid left">←</button><button data-grid-dy="-1" aria-label="Move measurement grid up">↑</button><button data-grid-dy="1" aria-label="Move measurement grid down">↓</button><button data-grid-dx="1" aria-label="Move measurement grid right">→</button><button data-grid-rotate="-0.25" aria-label="Rotate measurement grid counterclockwise">↶ 0.25°</button><button data-grid-rotate="0.25" aria-label="Rotate measurement grid clockwise">↷ 0.25°</button></div>
               <p>Drag the diamond reference, baseline ends, or any cut point to correct the estimate. Alignment changes are recalculated without discarding prior cut values.</p>
               <div class="button-row"><button class="subtle-button" id="photo-undo">↶ Undo</button><button class="subtle-button" id="photo-redo">↷ Redo</button></div>
             </div>
@@ -209,15 +219,19 @@
         </div>
         <div class="photo-results hidden" id="photo-results-wrap">
           <div class="panel" id="photo-results"></div>
-          <div class="panel"><div class="cut-controls-head"><h3>Verify every cut</h3><span>Automatic detection is an editable starting point.</span></div><div id="photo-cut-table" class="table-wrap"></div><div class="button-row"><button class="primary-button" id="save-photo-record">Save photo-derived record</button><button class="secondary-button" id="compare-methods">Compare with on-screen result</button><label class="check"><input type="checkbox" id="delete-photo-after" checked> Delete Photo After Measurement</label><button class="danger-button" id="delete-photo">Permanently delete photo</button></div></div>
+          <div class="panel"><div class="cut-controls-head"><h3>Verify every cut</h3><span>Automatic detection is an editable starting point.</span></div><div class="verification-strip" id="verification-strip"><div><small>VERIFICATION</small><strong id="verification-percent">0%</strong></div><progress id="verification-progress" max="100" value="0"></progress><span id="verification-detail">No cuts reviewed</span><button class="subtle-button" id="accept-readable">Accept readable</button><button class="subtle-button" id="reset-verification">Reset review</button></div><div class="verification-controls"><label class="check"><input type="checkbox" id="protect-accepted" checked> Protect accepted cuts from accidental edits</label><label class="check"><input type="checkbox" id="ack-verification-warnings"> I reviewed and acknowledge unresolved warnings</label><label>Verification session note<input id="verification-session-note" maxlength="240" placeholder="Optional note about this review session"></label><button class="primary-button" id="finalize-verification">Finalize verification</button><button class="subtle-button" id="reopen-verification" disabled>Reopen</button></div><ul class="verification-readiness" id="verification-readiness"><li>Complete a photo analysis to evaluate readiness.</li></ul><div id="photo-cut-table" class="table-wrap"></div><details class="verification-log-panel"><summary>Decision history · <span id="verification-log-count">0 events</span></summary><div class="verification-log" id="verification-log"></div></details><div class="button-row"><button class="primary-button" id="save-photo-record">Save photo-derived record</button><button class="secondary-button" id="compare-methods">Compare with on-screen result</button><button class="secondary-button" id="export-sanitized-image">Export sanitized blade image</button><label class="check"><input type="checkbox" id="delete-photo-after" checked> Delete Photo After Measurement</label><button class="danger-button" id="delete-photo">Permanently delete photo</button></div><p class="privacy-caption">Sanitized image export requires an accepted blade crop, re-encodes pixels as Portable Network Graphics (PNG), and excludes Exchangeable Image File Format (EXIF) metadata.</p></div>
         </div>
+        <div class="panel method-comparison hidden" id="method-comparison"><div class="cut-controls-head"><div><span class="kicker">METHOD COMPARISON</span><h3>Photo analysis versus on-screen measurement</h3></div><button class="subtle-button" id="close-method-comparison">Close</button></div><div id="method-comparison-summary"></div><div class="table-wrap" id="method-comparison-table"></div><div class="button-row"><button class="primary-button" id="save-combined-record">Save confidence-weighted combined record</button></div></div>
       </section>
 
       <section class="view" id="view-records" aria-labelledby="records-title">
         <div class="section-heading"><div><span class="kicker">LOCAL RECORDS</span><h2 id="records-title">Review and compare measurements</h2></div><div class="header-actions"><button class="secondary-button" id="export-project">Export project JSON</button><button class="secondary-button" id="import-project">Import project</button><input type="file" id="import-project-file" accept="application/json" hidden></div></div>
-        <div class="panel record-editor"><label>Record name<input id="record-name" value="Untitled key measurement"></label><label>Measurement method<select id="record-method"><option value="screen">On-screen physical alignment</option><option value="photo">Photo analysis</option><option value="combined">Combination of both methods</option><option value="manual">Manual entry</option></select></label><label>Manual bitting<input id="manual-bitting" placeholder="Example: 3-2-4-1-5"></label><label>Asset or job reference<input id="record-reference" placeholder="Optional anonymized reference"></label><label class="notes-field">Notes<textarea id="record-notes" rows="2" placeholder="Measurement notes; avoid addresses or access-control details."></textarea></label><button class="primary-button" id="manual-save">Save current record</button></div>
-        <div class="panel"><div class="table-actions"><label>Compare A<select id="compare-a"></select></label><label>Compare B<select id="compare-b"></select></label><button class="secondary-button" id="run-compare">Compare</button><button class="secondary-button" id="export-csv">Export CSV</button><button class="secondary-button" id="print-report">Print / PDF report</button><button class="secondary-button" id="copy-bitting">Copy bitting</button></div><div id="comparison-output"></div></div>
-        <div class="panel"><div class="cut-controls-head"><h3>Saved records</h3><button class="subtle-button" id="clear-sample">Clear sample data</button></div><div id="records-list" class="records-list"></div></div>
+        <div class="panel record-editor"><div class="record-editor-head"><div><span class="kicker">EDITABLE RECORD</span><h3>Current measurement record</h3></div><span class="status-lamp safe" id="record-editor-state"><i></i> EDITOR SAVED</span></div><label>Record name<input id="record-name" value="Untitled key measurement"></label><label>Measurement method<select id="record-method"><option value="screen">On-screen physical alignment</option><option value="photo">Photo analysis</option><option value="combined">Combination of both methods</option><option value="manual">Manual entry</option></select></label><label>Manual bitting<input id="manual-bitting" placeholder="Example: 3-2-4-1-5"></label><label>Asset or job reference<input id="record-reference" placeholder="Optional local reference"></label><label>Anonymized identifier<input id="record-anonymous-id" placeholder="Example: ASSET-014"></label><label>Tags<input id="record-tags" placeholder="inspection, training, revisit"></label><label class="notes-field">Notes<textarea id="record-notes" rows="2" placeholder="Measurement notes; avoid addresses or access-control details."></textarea></label><button class="primary-button" id="manual-save">Save current record</button></div>
+        <div class="panel records-workbench"><div class="cut-controls-head"><div><span class="kicker">RECORD WORKBENCH</span><h3>Find, organize, compare, and restore</h3></div><span id="record-count" class="status-lamp"><i></i> 0 RECORDS</span></div><div class="record-filters"><label>Search<input id="record-search" type="search" placeholder="Name, bitting, profile, tag, or reference"></label><label>Method<select id="record-filter-method"><option value="all">All methods</option><option value="photo">Photo analysis</option><option value="screen">On-screen</option><option value="combination">Combined</option><option value="manual">Manual</option></select></label><label>Verification<select id="record-filter-status"><option value="all">All states</option><option value="finalized">Finalized</option><option value="draft">Draft / other</option></select></label><label>Required tags<input id="record-filter-tags" placeholder="Comma-separated"></label><label>Sort<select id="record-sort"><option value="updated-desc">Newest updated</option><option value="updated-asc">Oldest updated</option><option value="name-asc">Name A–Z</option><option value="name-desc">Name Z–A</option><option value="profile-asc">Profile A–Z</option></select></label></div><div class="saved-view-bar"><label>Saved view<select id="saved-view-select"><option value="">Current filters</option></select></label><button class="secondary-button" id="save-record-view">Save view</button><button class="subtle-button" id="delete-record-view">Delete view</button><button class="secondary-button" id="export-records-archive">Archive records</button><button class="secondary-button" id="import-records-archive">Restore archive</button><input id="records-archive-file" type="file" accept="application/json" hidden></div><div id="records-list" class="records-list"></div></div>
+        <div class="panel"><div class="cut-controls-head"><div><span class="kicker">MULTI-RECORD COMPARISON</span><h3>Compare two or more measurements</h3></div><span class="selection-count" id="compare-selection-count" aria-live="polite">0 selected</span></div><p class="privacy-caption">Select records with the checkboxes in the workbench or with the list below. Comparisons require the same key-system profile.</p><div class="table-actions"><label class="compare-picker">Measurements<select id="compare-records" multiple size="5" aria-label="Select two or more records to compare"></select></label><button class="secondary-button" id="run-compare">Compare selected</button><button class="secondary-button" id="clear-comparison">Clear selection</button><button class="secondary-button" id="export-csv">Export selected CSV</button><button class="secondary-button" id="copy-bitting">Copy first bitting</button></div><div id="comparison-output" aria-live="polite"></div></div>
+        <div class="panel report-builder" id="report-builder"><div class="cut-controls-head"><div><span class="kicker">PROFESSIONAL REPORT</span><h3>Measurement evidence and verification history</h3></div><span class="status-lamp safe"><i></i> PHOTO EXCLUDED</span></div><div class="report-controls"><label>Record<select id="report-record"></select></label><button class="secondary-button" id="preview-report">Refresh preview</button><button class="secondary-button" id="download-report">Download standalone report</button><button class="primary-button" id="print-report">Print / Save PDF</button></div><p class="privacy-caption">Reports distinguish drafts from finalized verification, preserve decision reasons and notes, and include calibration, perspective, confidence, ambiguity, unreadable-position, and profile-rule evidence. Source photographs are excluded.</p><div class="report-preview" id="report-preview"><p class="lede">Save a measurement record to generate a report.</p></div></div>
+        <div class="panel worksheet-builder"><div class="cut-controls-head"><div><span class="kicker">PRINTABLE WORKSHEETS</span><h3>Field forms and scale checks</h3></div><span class="status-lamp"><i></i> PRINT AT 100%</span></div><div class="worksheet-options"><label class="check"><input type="checkbox" value="calibration" checked> Screen calibration worksheet</label><label class="check"><input type="checkbox" value="photo" checked> Photo checklist</label><label class="check"><input type="checkbox" value="measurement" checked> Blank bitting form</label><label class="check"><input type="checkbox" value="rulers" checked> Verification rulers</label></div><div class="button-row"><button class="secondary-button" id="download-worksheets">Download worksheets</button><button class="primary-button" id="print-worksheets">Print worksheets</button><button class="secondary-button" id="worksheet-marker">Open calibration marker</button></div><p class="privacy-caption">Print at 100 percent with page fitting disabled. Verify every printed dimension before relying on a worksheet or ruler.</p></div>
+        <div class="panel recovery-builder"><div class="cut-controls-head"><div><span class="kicker">RECOVERY CHECKPOINTS</span><h3>Compact local project restore points</h3></div><div class="button-row"><button class="secondary-button" id="create-recovery-point">Create checkpoint</button><button class="danger-button" id="clear-recovery-points">Delete all checkpoints</button></div></div><p class="privacy-caption">KEYGAUGE keeps up to five deduplicated checkpoints within a storage budget. Each checkpoint retains the current record state and the three most recent record revisions.</p><div id="recovery-list" class="recovery-list"></div></div>
       </section>
 
       <section class="view" id="view-profiles" aria-labelledby="profiles-title">
@@ -226,30 +240,91 @@
         <div class="profile-layout"><div class="panel" id="profile-list"></div><form class="panel profile-form" id="profile-form"><div class="form-grid"><label>Profile name<input name="name" required></label><label>Manufacturer<input name="manufacturer"></label><label>Compatible blanks<input name="blanks"></label><label>Cut positions<input name="cutCount" type="number" min="1" max="14"></label><label>First-cut distance (mm)<input name="firstCut" type="number" step="0.01"></label><label>Spacing (mm)<input name="spacing" type="number" step="0.01"></label><label>Stop method<select name="stop"><option value="shoulder">Shoulder</option><option value="tip">Tip</option></select></label><label>Tolerance (mm)<input name="tolerance" type="number" step="0.01"></label><label>Depth map (code:mm, one per line)<textarea name="depthText" rows="6"></textarea></label><label>Revision date<input name="revision" type="date"></label><label class="span-2">Profile source<input name="source" placeholder="Document, gauge, or other authorized source"></label><label class="span-2">Notes<textarea name="notes" rows="3"></textarea></label></div><div class="button-row"><button class="primary-button" type="submit">Save profile</button><button class="secondary-button" type="button" id="new-profile">New custom profile</button></div></form></div>
       </section>
 
+      <section class="view" id="view-validation" aria-labelledby="validation-title">
+        <div class="section-heading"><div><span class="kicker">RELEASE VALIDATION</span><h2 id="validation-title">Validate this browser and installation</h2></div><span class="status-lamp" id="validation-status"><i></i> NOT RUN</span></div>
+        <div class="notice"><span>i</span><p><strong>Local synthetic checks.</strong> This workbench validates deterministic scale, perspective, coordinate, depth-code, privacy, and browser-capability behavior without reading saved records or photographs. It does not certify real-world bitting accuracy.</p></div>
+        <div class="validation-actions"><button class="primary-button" id="run-validation">Run local validation</button><button class="secondary-button" id="run-performance">Run performance check</button><button class="secondary-button" id="download-diagnostics">Download privacy-safe diagnostics</button><button class="secondary-button" id="open-validation-sheet">Open print verification sheet</button></div>
+        <div class="validation-summary" aria-live="polite">
+          <div><small>GOLDEN CHECKS</small><strong id="validation-checks">—</strong></div>
+          <div><small>BROWSER CAPABILITIES</small><strong id="validation-browser">—</strong></div>
+          <div><small>PERFORMANCE</small><strong id="validation-performance">—</strong></div>
+          <div><small>PRIVACY SCRUB</small><strong id="validation-privacy">—</strong></div>
+        </div>
+        <div class="validation-grid">
+          <article class="panel"><div class="cut-controls-head"><div><span class="kicker">DETERMINISTIC CORPUS</span><h3>Measurement checks</h3></div></div><div id="validation-results" class="validation-list"><p>Run local validation to check the bundled golden fixture.</p></div></article>
+          <article class="panel"><div class="cut-controls-head"><div><span class="kicker">CURRENT BROWSER</span><h3>Capability checks</h3></div></div><div id="capability-results" class="validation-list"><p>Capabilities are evaluated without requesting camera permission.</p></div></article>
+          <article class="panel"><div class="cut-controls-head"><div><span class="kicker">SYNTHETIC RASTER</span><h3>Performance check</h3></div></div><div id="performance-results" class="validation-list"><p>No performance check has run.</p></div></article>
+          <article class="panel"><div class="cut-controls-head"><div><span class="kicker">DATA BOUNDARY</span><h3>Privacy check</h3></div></div><div id="privacy-results" class="validation-list"><p>No record or photo content is inspected by this workbench.</p></div></article>
+        </div>
+        <div class="panel validation-guidance"><h3>Release evidence and known limits</h3><p>Use the print sheet at 100 percent with page fitting disabled, then verify its dimensions with a physical ruler. Camera behavior, offline installation, printing, touch input, and real photographs still require manual testing on the target device.</p><div class="button-row"><a class="secondary-button" href="VALIDATION.md" target="_blank" rel="noopener">Validation protocol</a><a class="secondary-button" href="SECURITY.md" target="_blank" rel="noopener">Security boundary</a><a class="secondary-button" href="SUPPORTED-BROWSERS.md" target="_blank" rel="noopener">Browser matrix</a></div></div>
+        <section class="panel field-validation-lab" aria-labelledby="field-validation-title">
+          <div class="cut-controls-head"><div><span class="kicker">FIELD VALIDATION LAB</span><h3 id="field-validation-title">Compare a saved measurement with professional-tool ground truth</h3></div><span class="status-lamp" id="field-validation-status"><i></i> NO STUDY</span></div>
+          <div class="notice"><span>!</span><p><strong>Characterization, not certification.</strong> Reference values are user supplied. A passing study describes only its recorded key, equipment, profile, operator, and conditions; it does not certify future measurements or fitness for cutting a key.</p></div>
+          <div class="photo-workflow field-workflow"><b>RECORD</b><b>GROUND TRUTH</b><b>CRITERIA</b><b>ANALYZE</b><b>REVIEW</b><b>REPORT</b></div>
+          <div class="validation-summary field-program-summary" aria-live="polite"><div><small>SAVED STUDIES</small><strong id="field-study-count">0</strong></div><div><small>MEETS CRITERIA</small><strong id="field-pass-rate">—</strong></div><div><small>MEAN ABS. ERROR</small><strong id="field-mean-error">—</strong></div><div><small>WORST ERROR</small><strong id="field-max-error">—</strong></div></div>
+          <div class="field-validation-grid">
+            <form class="field-study-form" id="field-study-form">
+              <div class="form-grid">
+                <label>Study name<input id="field-study-name" required value="Field validation"></label><label>Campaign / repeatability group<input id="field-study-campaign" required value="Campaign 1"></label>
+                <label class="span-2">Saved measurement record<select id="field-study-record" required></select></label>
+                <label>Reference source<select id="field-reference-source"><option>Professional key gauge</option><option>Calibrated depth micrometer</option><option>Authorized code source</option><option>Other professional tool</option></select></label><label>Instrument / source identifier<input id="field-reference-instrument" required placeholder="Anonymized gauge ID or document revision"></label>
+                <label>Reference calibration date<input id="field-reference-calibration-date" type="date"></label><label>Reviewer<input id="field-study-reviewer" placeholder="Name or initials"></label>
+                <label class="span-2">Professional-tool bitting<input id="field-reference-bitting" required placeholder="Example: 2-4-3-1-5"></label>
+                <label class="span-2">Professional-tool depths (mm)<textarea id="field-reference-depths" required rows="3" placeholder="Example: 0.640, 1.280, 0.960, 0.320, 1.600"></textarea></label>
+                <label>Per-cut tolerance (mm)<input id="field-depth-tolerance" type="number" min="0" step="0.001" value="0.150"></label><label>Maximum RMS error (mm)<input id="field-max-rms" type="number" min="0" step="0.001" value="0.150"></label>
+                <label>Minimum code agreement (%)<input id="field-min-code-agreement" type="number" min="0" max="100" step="0.1" value="100"></label><label>Disposition<select id="field-study-disposition"><option value="draft">Draft</option><option value="reviewed">Reviewed</option><option value="accepted">Accepted</option><option value="rejected">Rejected</option></select></label>
+                <label class="check span-2"><input id="field-require-readable" type="checkbox" checked> Require every cut to be readable</label><label class="check span-2"><input id="field-require-finalized" type="checkbox" checked> Require finalized verification for photo records</label><label class="check span-2"><input id="field-require-profile" type="checkbox"> Require a verified profile source</label>
+                <label class="span-2">Study notes<textarea id="field-study-notes" rows="3" placeholder="Fixture, operator, lighting, device, repeated-run, and anomaly notes"></textarea></label>
+              </div>
+              <div class="button-row"><button class="primary-button" id="analyze-field-study" type="button">Analyze comparison</button><button class="secondary-button" id="save-field-study" type="button">Save study</button><button class="subtle-button" id="new-field-study" type="button">New study</button></div>
+            </form>
+            <div><div id="field-validation-preview" class="field-validation-preview"><p class="lede">Choose a saved record, enter professional-tool reference values, then analyze.</p></div><div class="button-row"><button class="secondary-button" id="download-field-report" disabled>Download report</button><button class="secondary-button" id="print-field-report" disabled>Print report</button></div></div>
+          </div>
+          <div class="field-study-archive"><div><span class="kicker">PORTABLE EVIDENCE</span><h3>Saved field studies</h3></div><div class="button-row"><button class="secondary-button" id="export-validation-studies">Export archive</button><button class="secondary-button" id="import-validation-studies">Import archive</button><input id="validation-studies-file" type="file" accept="application/json,.json" hidden><button class="secondary-button" id="export-validation-csv">Export CSV</button></div></div>
+          <div id="validation-program-summary" class="repeatability-summary"></div>
+          <div id="field-study-list" class="field-study-list"><p class="lede">No field validation studies have been saved.</p></div>
+        </section>
+      </section>
+
       <section class="view" id="view-help" aria-labelledby="help-title">
-        <div class="section-heading"><div><span class="kicker">GUIDE, LIMITATIONS & PRIVACY</span><h2 id="help-title">Use KEYGAUGE responsibly</h2></div><div class="header-actions"><a class="secondary-button" href="CHANGELOG.md" download>Batch 2 changelog</a><a class="secondary-button" href="README.md" download>Download README</a></div></div>
+        <div class="section-heading"><div><span class="kicker">GUIDE, LIMITATIONS & PRIVACY</span><h2 id="help-title">Use KEYGAUGE responsibly</h2></div><div class="header-actions"><a class="secondary-button" href="CHANGELOG.md" download>Batch 9 changelog</a><a class="secondary-button" href="README.md" download>Download README</a></div></div>
         <div class="help-grid">
           <article class="panel"><h3>Screen method</h3><p>Calibrate in full screen at 100% browser zoom, select a verified profile, align the shoulder or tip, and adjust each cut. A browser cannot infer true physical size from resolution alone.</p></article>
           <article class="panel"><h3>Photo method</h3><p>Keep the scale reference in the same plane as the key. Correct perspective, then verify the baseline, reference, and every cut. Unscaled photos remain explicitly uncalibrated.</p></article>
           <article class="panel"><h3>Private by design</h3><p>Processing, autosave, profiles, and records remain in this browser. There is no telemetry, analytics, advertising, remote image analysis, or account.</p></article>
           <article class="panel"><h3>Professional verification</h3><p>KEYGAUGE is a visual measurement and documentation aid. Wear, parallax, display calibration, image blur, and unverified profile data can all affect estimates.</p></article>
         </div>
-        <div class="panel data-controls"><div><h3>Local data controls</h3><p id="photo-storage-status">No photograph is currently stored locally.</p></div><button class="secondary-button" id="download-static">Download static app</button><button class="danger-button" id="fresh-start">Fresh start — clear all local data</button></div>
+        <div class="panel storage-dashboard"><div class="cut-controls-head"><div><span class="kicker">LOCAL STORAGE HEALTH</span><h3>Data durability and offline readiness</h3></div></div><div class="storage-metrics"><div><small>PROJECT PAYLOAD</small><strong id="storage-project-size">Calculating…</strong></div><div><small>BROWSER STORAGE</small><strong id="storage-browser-usage">Calculating…</strong></div><div><small>RETENTION POLICY</small><strong id="storage-persistence">Checking…</strong></div></div><p>All records remain device-local. Export project backups regularly; clearing browser site data can permanently remove local records.</p><div class="button-row"><button class="secondary-button" id="request-persistent-storage">Request storage protection</button><button class="secondary-button hidden" id="install-app">Install KEYGAUGE</button></div></div>
+        <div class="panel data-controls"><div><h3>Local data controls</h3><p id="photo-storage-status">No photograph is currently stored locally.</p><p>Fresh Start permanently removes the project, previous-session copy, recovery checkpoints, calibration, profiles, settings, and authorization acknowledgment. It does not retain a hidden recovery copy.</p></div><button class="secondary-button" id="download-static">Download static app</button><button class="danger-button" id="fresh-start">Fresh start — permanently clear local data</button></div>
       </section>
     </main>
   </div>
 
-  <dialog id="responsible-dialog">
+  <dialog id="responsible-dialog" aria-labelledby="responsible-title">
     <form method="dialog" class="dialog-card">
       <span class="dialog-mark">KEYGAUGE</span>
-      <h2>Authorized use only</h2>
+      <h2 id="responsible-title">Authorized use only</h2>
       <p>KEYGAUGE is intended for locksmithing, maintenance, restoration, and measurement of keys you own or are authorized to service. You are responsible for complying with applicable laws, professional requirements, and property-access rules.</p>
       <label class="check"><input type="checkbox" id="ack-check"> I understand and will use KEYGAUGE only for authorized work.</label>
       <button class="primary-button" id="ack-button" value="accept" disabled>Enter KEYGAUGE</button>
     </form>
   </dialog>
 
+  <dialog id="saved-view-dialog" aria-labelledby="saved-view-title">
+    <form method="dialog" class="dialog-card compact-dialog" id="saved-view-form">
+      <span class="dialog-mark">RECORD WORKBENCH</span>
+      <h2 id="saved-view-title">Save current view</h2>
+      <label>View name<input id="saved-view-name" maxlength="80" required autocomplete="off"></label>
+      <div class="button-row"><button class="primary-button" value="save" type="submit">Save view</button><button class="secondary-button" id="cancel-saved-view" value="cancel" type="button">Cancel</button></div>
+    </form>
+  </dialog>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script type="module" src="app.js"></script>
+  <div class="sr-only" id="app-announcer" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div class="boot-error" id="boot-error" role="alert" hidden>
+    <strong>KEYGAUGE could not start.</strong>
+    <span>Confirm that every file from the static package was uploaded to this folder, then refresh the page. The application module must be served as JavaScript.</span>
+  </div>
+  <script type="module" src="./app.js?v=1.9.3"></script>
 </body>
 </html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+  <title>KEYGAUGE v1.9.3 — Release Verification Sheet</title>
+  <style>
+    @page{size:letter;margin:12mm}*{box-sizing:border-box}body{margin:0;color:#151713;background:#fff;font:10pt/1.35 system-ui,sans-serif}main{width:191.9mm;margin:auto}header{display:flex;justify-content:space-between;gap:10mm;border-bottom:3px solid #171815;padding-bottom:4mm}h1{margin:0;font:700 22pt Georgia,serif}h2{margin:5mm 0 2mm;font-size:13pt}.kicker,.warning{font:800 8pt ui-monospace,monospace;letter-spacing:.1em}.warning{padding:3mm;border:2px solid #111;background:#f2eee3}.meta{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;margin:4mm 0}.field{min-height:11mm;border-bottom:1px solid #555}.field b{display:block;font-size:7pt;text-transform:uppercase}.verification{display:grid;grid-template-columns:105mm 1fr;gap:8mm;align-items:start}.ruler{position:relative;height:12mm;border-top:1px solid #111;background:repeating-linear-gradient(90deg,#111 0 .2mm,transparent .2mm 1mm)}.ruler:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,#111 0 .35mm,transparent .35mm 10mm);height:7mm}.ruler-labels{display:flex;justify-content:space-between;margin-top:-6mm;font:7pt ui-monospace}.line100{width:100mm}.line50{width:50mm}.card{width:85.6mm;height:53.98mm;border:1mm solid #111;display:grid;place-content:center;text-align:center;background:repeating-linear-gradient(45deg,#fff 0 4mm,#eee 4mm 8mm)}.square{width:25mm;height:25mm;border:1px solid #111;display:grid;place-content:center;font:7pt ui-monospace}.grid10{width:60mm;height:40mm;border:1px solid #111;background-image:linear-gradient(#777 .2mm,transparent .2mm),linear-gradient(90deg,#777 .2mm,transparent .2mm);background-size:10mm 10mm}.shapes{display:flex;align-items:flex-start;gap:7mm}.checks{display:grid;grid-template-columns:1fr 1fr;gap:2mm 6mm;margin-top:4mm}.check{border-bottom:1px solid #777;min-height:7mm}.table{width:100%;border-collapse:collapse;margin-top:3mm}.table th,.table td{height:9mm;padding:2mm;border:1px solid #555;text-align:left}.table th{background:#eee;font-size:7pt;text-transform:uppercase}.notice{margin-top:4mm;padding:3mm;border-left:3px solid #9a6b1e;background:#f3f0e7;font-size:8pt}.page-break{break-before:page;margin-top:8mm}@media screen{body{padding:10mm;background:#d8d8d2}main{padding:10mm;background:#fff;box-shadow:0 4px 20px #0003}}@media print{body,main{width:auto}.page-break{margin-top:0}}
+  </style>
+</head>
+<body>
+  <main>
+    <header><div><div class="kicker">KEYGAUGE · RELEASE VALIDATION</div><h1>Print & Device Verification Sheet</h1></div><strong>v1.9.3</strong></header>
+    <p class="warning">PRINT AT 100 PERCENT. Disable “Fit to page,” “Shrink oversized pages,” and other scaling. Measure every shape before use.</p>
+    <div class="meta"><div class="field"><b>Date</b></div><div class="field"><b>Browser / version</b></div><div class="field"><b>Device / operating system</b></div><div class="field"><b>Printer</b></div><div class="field"><b>Paper size</b></div><div class="field"><b>Tester</b></div></div>
+    <section class="verification">
+      <div><h2>100 millimeter ruler</h2><div class="ruler line100"></div><div class="ruler-labels line100"><span>0</span><span>10</span><span>20</span><span>30</span><span>40</span><span>50</span><span>60</span><span>70</span><span>80</span><span>90</span><span>100 mm</span></div><h2>50 millimeter ruler</h2><div class="ruler line50"></div><div class="ruler-labels line50"><span>0</span><span>10</span><span>20</span><span>30</span><span>40</span><span>50 mm</span></div></div>
+      <div><h2>Measured result</h2><div class="field"><b>100 mm line</b> ________ mm</div><div class="field"><b>50 mm line</b> ________ mm</div><p>Suggested print-scale check: within ±0.5 mm. This tolerance evaluates the printout, not bitting accuracy.</p></div>
+    </section>
+    <h2>Known-dimension shapes</h2>
+    <div class="shapes"><div class="card"><b>85.60 × 53.98 mm</b><span>Card outline</span></div><div><div class="square">25 × 25 mm</div><p>Measured: ____ × ____ mm</p></div><div><div class="grid10"></div><p>Six 10 mm columns<br>Four 10 mm rows</p></div></div>
+    <div class="checks"><div class="check">☐ Browser print scale set to 100%</div><div class="check">☐ Page fitting disabled</div><div class="check">☐ 100 mm ruler physically verified</div><div class="check">☐ Card dimensions physically verified</div><div class="check">☐ Display zoom recorded before screen test</div><div class="check">☐ Result retained with release notes</div></div>
+    <p class="notice">This sheet validates printer and display-scale behavior only. It does not certify a key-system profile, photograph, contour, depth estimate, or bitting sequence.</p>
+
+    <section class="page-break">
+      <div class="kicker">MANUAL COMPATIBILITY RUN</div><h2>Browser and input matrix</h2>
+      <table class="table"><thead><tr><th>Browser / device</th><th>Touch</th><th>Mouse</th><th>Keyboard</th><th>Camera allow</th><th>Camera deny → import</th><th>Offline reopen</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+      <h2>Reference measurement run</h2>
+      <table class="table"><thead><tr><th>Reference item</th><th>Known value</th><th>KEYGAUGE result</th><th>Difference</th><th>Professional-tool result</th><th>Disposition</th></tr></thead><tbody><tr><td>Scale reference</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>Perspective probes</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>Cut position 1</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>Cut position 2</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>Cut position 3</td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+      <h2>Release sign-off</h2><div class="checks"><div class="check">☐ Golden fixture passed</div><div class="check">☐ Privacy scrub passed</div><div class="check">☐ Import limits exercised</div><div class="check">☐ Photograph deletion verified</div><div class="check">☐ Root and subdirectory hosting checked</div><div class="check">☐ Known limitations reviewed</div></div>
+      <div class="meta"><div class="field"><b>Tester signature</b></div><div class="field"><b>Date</b></div><div class="field"><b>Release disposition</b></div></div>
+      <p class="warning">Verify every bitting estimate with appropriate professional locksmith tools before cutting a key or servicing a lock.</p>
+    </section>
+  </main>
+</body>
+</html>
